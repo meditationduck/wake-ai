@@ -78,6 +78,30 @@ GPT_PRICING = {
             cache_write_mtoken_cost=2.50,
         ),
     },
+    # GPT-6 Astra (2026-09). Standard tier: $10 input / $1 cached / $50 output per 1M,
+    # cache writes $12.50 (1.25x input, as for the 5.6 family). Flex halves every rate,
+    # priority ("fast") doubles them. Long-context (>272K input) is 2x input/cached/
+    # cache-write and 1.5x output, the same rule the 5.6 family uses.
+    "gpt-6-astra": {
+        "flex": CodexTokenPricing(
+            input_mtoken_cost=5.00,
+            cached_input_mtoken_cost=0.50,
+            output_mtoken_cost=25.00,
+            cache_write_mtoken_cost=6.25,
+        ),
+        "standard": CodexTokenPricing(
+            input_mtoken_cost=10.00,
+            cached_input_mtoken_cost=1.00,
+            output_mtoken_cost=50.00,
+            cache_write_mtoken_cost=12.50,
+        ),
+        "priority": CodexTokenPricing(
+            input_mtoken_cost=20.00,
+            cached_input_mtoken_cost=2.00,
+            output_mtoken_cost=100.00,
+            cache_write_mtoken_cost=25.00,
+        ),
+    },
     "gpt-5.5": {
         "flex": CodexTokenPricing(
             input_mtoken_cost=2.50,
