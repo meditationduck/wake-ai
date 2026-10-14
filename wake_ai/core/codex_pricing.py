@@ -102,6 +102,29 @@ GPT_PRICING = {
             cache_write_mtoken_cost=25.00,
         ),
     },
+    # GPT-6.1 Sol (2026-10). Standard $2 input / $10 output per 1M as listed by third-party
+    # aggregators (2026-10-11), not yet confirmed against OpenAI's page; cached input and cache
+    # writes follow the 5.6/6 rule (0.1x and 1.25x input). Flex halves, priority doubles.
+    "gpt-6.1-sol": {
+        "flex": CodexTokenPricing(
+            input_mtoken_cost=1.00,
+            cached_input_mtoken_cost=0.10,
+            output_mtoken_cost=5.00,
+            cache_write_mtoken_cost=1.25,
+        ),
+        "standard": CodexTokenPricing(
+            input_mtoken_cost=2.00,
+            cached_input_mtoken_cost=0.20,
+            output_mtoken_cost=10.00,
+            cache_write_mtoken_cost=2.50,
+        ),
+        "priority": CodexTokenPricing(
+            input_mtoken_cost=4.00,
+            cached_input_mtoken_cost=0.40,
+            output_mtoken_cost=20.00,
+            cache_write_mtoken_cost=5.00,
+        ),
+    },
     "gpt-5.5": {
         "flex": CodexTokenPricing(
             input_mtoken_cost=2.50,
