@@ -125,6 +125,29 @@ GPT_PRICING = {
             cache_write_mtoken_cost=5.00,
         ),
     },
+    # Daybreak Blue (OpenAI's defensive-cyber access program model). Standard $4 / $20 per 1M
+    # as listed by third-party aggregators (2026-10), unconfirmed with OpenAI; cached and cache
+    # writes follow the 5.6/6 rule (0.1x and 1.25x input). Flex halves, priority doubles.
+    "gpt-daybreak-blue-latest": {
+        "flex": CodexTokenPricing(
+            input_mtoken_cost=2.00,
+            cached_input_mtoken_cost=0.20,
+            output_mtoken_cost=10.00,
+            cache_write_mtoken_cost=2.50,
+        ),
+        "standard": CodexTokenPricing(
+            input_mtoken_cost=4.00,
+            cached_input_mtoken_cost=0.40,
+            output_mtoken_cost=20.00,
+            cache_write_mtoken_cost=5.00,
+        ),
+        "priority": CodexTokenPricing(
+            input_mtoken_cost=8.00,
+            cached_input_mtoken_cost=0.80,
+            output_mtoken_cost=40.00,
+            cache_write_mtoken_cost=10.00,
+        ),
+    },
     "gpt-5.5": {
         "flex": CodexTokenPricing(
             input_mtoken_cost=2.50,
