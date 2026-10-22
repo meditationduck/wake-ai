@@ -27,6 +27,35 @@ TERMINATION_PROMPT = (
     "You are approaching the cost limit. Please finish the task as quickly as possible."
 )
 
+# Cyber access programs the account may request per (codex executable, model), from `codex debug models`.
+_cyber_programs: dict[tuple[str, str], list[str]] = {}
+
+
+async def _cyber_access_program(codex_executable: str, model: str) -> str | None:
+    """`daybreak_blue` when Codex's model catalog lists it for this account on `model`, else None.
+
+    Daybreak lifts the cyber filter's refusals, so it is requested whenever it is offered (as
+    oh-my-pi does). It is never sent blindly: the backend answers an ineligible request with
+    403 "Daybreak isn't available for this model" on every retry instead of downgrading it.
+    """
+    key = (codex_executable, model)
+    if key not in _cyber_programs:
+        proc = await asyncio.create_subprocess_exec(
+            codex_executable, "debug", "models",
+            stdin=asyncio.subprocess.DEVNULL,
+            stdout=asyncio.subprocess.PIPE,
+            stderr=asyncio.subprocess.DEVNULL,
+        )
+        out, _ = await proc.communicate()
+        try:
+            models = json.loads(out)["models"]
+        except (ValueError, KeyError, TypeError):
+            return None  # not cached: the next session asks again
+        for m in models:
+            _cyber_programs[(codex_executable, m.get("slug", ""))] = (m.get("available_access_programs") or {}).get("cyber") or []
+        _cyber_programs.setdefault(key, [])
+    return "daybreak_blue" if "daybreak_blue" in _cyber_programs[key] else None
+
 
 class SimpleTotalTokenUsage(TypedDict):
     input_tokens: int
@@ -226,6 +255,11 @@ class CodexSession(SessionABC):
 
         args.append("--model")
         args.append(model)
+
+        program = await _cyber_access_program(self.codex_executable, model)
+        if program is not None:
+            args.append("--cyber-access-program")
+            args.append(program)
 
         #args.append("--include-plan-tool")
 
